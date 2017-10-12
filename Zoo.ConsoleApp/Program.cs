@@ -10,49 +10,50 @@ using Zoo.BusinessLogic.Services;
 
 namespace Zoo.ConsoleApp
 {
-  public static class Program
-  {
-    public static void Main()
-    {
-      var lions = new[]
-      {
-        new Lion(new DateTime(2010, 4, 28)),
-        new Lion(new DateTime(2012, 5, 11))
-      };
-      var otherAnimals = new Animal[] {
-        new Rabbit(new DateTime(2014, 1, 1)),
-        new Zebra(new DateTime(2008, 12, 1)) 
-      };
-      var animals = lions.Union<Animal>(otherAnimals).ToList();
+	public static class Program
+	{
+		public static void Main()
+		{
+			var lions = new[]
+			{
+		new Lion(new DateTime(2010, 4, 28)),
+		new Lion(new DateTime(2012, 5, 11))
+	  };
+			var otherAnimals = new Animal[] {
+		new Rabbit(new DateTime(2014, 1, 1)),
+		new Zebra(new DateTime(2008, 12, 1))
+	  };
+			var animals = lions.Union<Animal>(otherAnimals).ToList();
 
-      var keepers = new[]
-      {
-        new Keeper(lions),
-        new Keeper(otherAnimals) 
-      };
+			var keepers = new[]
+			{
+		new Keeper(lions),
+		new Keeper(otherAnimals)
+	  };
+			
+			var schedulers = new List<Scheduler>();
+			schedulers.Add(FeedingScheduler.Instance);
+			schedulers.Add(GroomingScheduler.Instance);
 
-      var feedingScheduler = FeedingScheduler.Instance;
-      var groomingScheduler = GroomingScheduler.Instance;
+			while (true)
+			{
+				foreach (var scheduler in schedulers)
 
-      while (true)
-      {
-        Console.WriteLine("Feeding the animals...");
-        feedingScheduler.AssignFeedingJobs(keepers, animals);
+				{
+					Console.WriteLine(scheduler.message);
+					scheduler.AssignJobs(keepers, animals);
+				}
+				Console.WriteLine("Done. Results:");
 
-        Console.WriteLine("Grooming the animals...");
-        groomingScheduler.AssignGroomingJobs(keepers, animals);
+				foreach (var animal in animals)
+				{
+					Console.WriteLine(animal);
+				}
 
-        Console.WriteLine("Done. Results:");
+				Console.WriteLine();
+				Thread.Sleep(1000);
+			}
 
-        foreach (var animal in animals)
-        {
-          Console.WriteLine(animal);
-        }
-
-        Console.WriteLine();
-        Thread.Sleep(1000);
-      }
-
-    }
-  }
+		}
+	}
 }
